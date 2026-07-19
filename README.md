@@ -1,67 +1,40 @@
 # Job Market Dashboard
 
-A personal job market intelligence dashboard for tracking, analyzing, and prioritizing internship and entry-level job postings.
+## Project Overview
 
-This project starts as a small Python-based MVP and is designed to gradually evolve into a more automated, data-driven job search system with job posting analysis, skill frequency tracking, priority scoring, AI-assisted insights, and cloud deployment.
+Job Market Dashboard is a personal job market intelligence dashboard for
+tracking, analyzing, and prioritizing internship and entry-level job postings.
+It helps organize opportunities for Python, Software Engineering, Cloud,
+DevOps, Infrastructure, Data, AI/ML, and MLOps roles.
 
-## Project Purpose
+The current MVP uses a manually maintained CSV file, pandas-based analysis, and
+a small Streamlit dashboard. It is intentionally local and simple so that the
+core job-search workflow is useful before automation or deployment features are
+introduced.
 
-The goal of this project is to build a practical dashboard that helps track job opportunities and understand the job market for roles such as:
+## Current MVP Features
 
-* Python Software Engineer
-* Backend Engineer
-* Software Engineer
-* DevOps Engineer
-* Cloud Engineer
-* Infrastructure Engineer
-* Site Reliability Engineer
-* Data Engineer
-* AI / ML / MLOps Engineer
-
-The first MVP focuses on manually collected job postings stored in a CSV file. Later versions may include database storage, automation, AI analysis, and deployment to cloud infrastructure.
-
-## Current MVP Scope
-
-The initial MVP should stay intentionally small.
-
-### MVP Goals
-
-* Load job posting data from a CSV file.
-* Validate the required CSV columns.
-* Analyze job postings using Python and pandas.
-* Display a simple dashboard using Streamlit.
-* Track common skills across job postings.
-* Prioritize jobs using a simple rule-based scoring system.
-
-### Non-Goals for the Initial MVP
-
-The following should not be implemented in the first version:
-
-* Web scraping
-* AI analysis
-* User authentication
-* PostgreSQL
-* FastAPI backend
-* React frontend
-* Docker deployment
-* AWS deployment
-* CI/CD pipeline
-
-These may be added later after the basic local dashboard works.
+- Load job postings from a CSV file.
+- Validate that required CSV columns are present.
+- Parse and analyze required and preferred skills.
+- Apply explainable, rule-based priority scoring.
+- Display the results in a Streamlit dashboard.
+- Filter jobs by status, job type, work mode, priority level, and skill search.
+- Show summary metrics, a job table, and a top-required-skills chart.
 
 ## Tech Stack
 
-| Area            | Technology | Reason                                                                     |
-| --------------- | ---------- | -------------------------------------------------------------------------- |
-| Language        | Python     | Good fit for data analysis, automation, AI integration, and DevOps tooling |
-| Package Manager | uv         | Fast and simple Python dependency management                               |
-| Data Analysis   | pandas     | Used for CSV loading, filtering, aggregation, and skill frequency analysis |
-| Dashboard       | Streamlit  | Allows building a web dashboard quickly using Python only                  |
-| Data Storage    | CSV        | Simple starting point before introducing a database                        |
-| Testing         | pytest     | Used for testing data loading and analysis functions                       |
-| Lint / Format   | ruff       | Used for linting, formatting, and import cleanup                           |
-| Type Checking   | mypy       | Used for static type checking                                              |
-| Command Runner  | Makefile   | Provides consistent project commands                                       |
+| Area | Technology |
+| --- | --- |
+| Language | Python |
+| Package manager | uv |
+| Data analysis | pandas |
+| Dashboard | Streamlit |
+| Testing | pytest |
+| Linting and formatting | ruff |
+| Type checking | mypy |
+| Command runner | Makefile |
+| MVP data storage | CSV |
 
 ## Project Structure
 
@@ -71,147 +44,78 @@ job-market-dashboard/
 │   └── main.py
 ├── data/
 │   └── raw/
+│       ├── job_postings.csv      # Standard local data file
+│       └── sample_jobs.csv       # Included sample/fallback data
 ├── src/
 │   └── job_market/
 │       ├── __init__.py
-│       ├── data_loader.py
 │       ├── analyzer.py
+│       ├── data_loader.py
 │       └── scoring.py
 ├── tests/
-│   └── test_data_loader.py
-├── .gitignore
+│   ├── test_data_loader.py
+│   └── test_scoring.py
 ├── Makefile
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
 
-## Directory Responsibilities
+- `app/main.py`: Streamlit UI composition, filters, metrics, and tables. Keep
+  reusable business logic out of this file.
+- `src/job_market/data_loader.py`: CSV loading and required-column validation.
+- `src/job_market/analyzer.py`: Skill parsing and skill-frequency analysis.
+- `src/job_market/scoring.py`: Rule-based job priority scores and levels.
+- `data/raw/job_postings.csv`: Standard location for a manually maintained job
+  posting CSV. The dashboard uses `sample_jobs.csv` as a fallback while the
+  standard file is absent.
+- `tests/`: Automated tests for reusable data-loading, analysis, and scoring
+  behavior.
 
-### `app/`
+## CSV Schema
 
-Contains the Streamlit web application entry point.
-
-The main dashboard should start from:
-
-```text
-app/main.py
-```
-
-This file should focus on UI composition only. Business logic should be imported from `src/job_market/`.
-
-### `src/job_market/`
-
-Contains reusable project logic.
-
-Expected responsibilities:
-
-* `data_loader.py`
-
-  * Load job posting data from CSV.
-  * Validate required columns.
-  * Return a pandas DataFrame.
-
-* `analyzer.py`
-
-  * Analyze job posting data.
-  * Count jobs by location, company, domain, and status.
-  * Calculate skill frequency.
-
-* `scoring.py`
-
-  * Assign priority scores to job postings.
-  * Keep the scoring logic rule-based for the MVP.
-
-### `data/raw/`
-
-Stores manually collected raw job posting CSV files.
-
-For the MVP, CSV files may be committed to Git if they contain only sample or public job posting data.
-
-Do not commit private notes, personal data, secrets, API keys, or sensitive information.
-
-### `tests/`
-
-Contains automated tests.
-
-Initial test focus:
-
-* CSV file loading
-* Required column validation
-* Empty file handling
-* Skill parsing
-* Job scoring logic
-
-## Expected CSV Schema
-
-The initial CSV file should use the following columns:
+Create `data/raw/job_postings.csv` with these columns:
 
 ```csv
 company,title,location,work_mode,job_type,domain,required_skills,preferred_skills,date_posted,apply_url,status,notes
 ```
 
-### Column Descriptions
+| Column | Description |
+| --- | --- |
+| `company` | Company name |
+| `title` | Job title |
+| `location` | Job location |
+| `work_mode` | Onsite, Hybrid, Remote, or Unknown |
+| `job_type` | Internship, Entry-Level, New Grad, Junior, or Unknown |
+| `domain` | Job or industry domain |
+| `required_skills` | Required skills |
+| `preferred_skills` | Preferred skills |
+| `date_posted` | Posting date, if available |
+| `apply_url` | Application URL |
+| `status` | Tracking status, such as New, Interested, or Applied |
+| `notes` | Personal notes |
 
-| Column             | Description                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `company`          | Company name                                                                        |
-| `title`            | Job title                                                                           |
-| `location`         | Job location                                                                        |
-| `work_mode`        | Onsite, Hybrid, Remote, or Unknown                                                  |
-| `job_type`         | Internship, Entry-Level, New Grad, Junior, or Unknown                               |
-| `domain`           | Industry or job domain, such as Healthcare, FinTech, Cloud, AI, Data, Manufacturing |
-| `required_skills`  | Semicolon-separated required skills                                                 |
-| `preferred_skills` | Semicolon-separated preferred skills                                                |
-| `date_posted`      | Posting date if available                                                           |
-| `apply_url`        | Application URL                                                                     |
-| `status`           | Tracking status                                                                     |
-| `notes`            | Personal notes about the posting                                                    |
+Separate skills with semicolons:
 
-### Skill Format
-
-Skills should be separated by semicolons.
-
-Example:
-
-```csv
+```text
 Python;SQL;AWS;Docker
 ```
 
-This format is easier to parse than comma-separated skills because job descriptions often contain commas inside text.
+## Setup
 
-## Suggested Job Status Values
-
-Use consistent status values:
-
-```text
-New
-Interested
-Applied
-Interview
-Rejected
-Closed
-Saved
-Ignored
-```
-
-## Development Commands
-
-This project uses `uv` and `Makefile`.
-
-### Install dependencies
-
-```bash
-make install
-```
-
-Equivalent command:
+Install the project dependencies with either command:
 
 ```bash
 uv sync
 ```
 
-### Run the Streamlit app
+```bash
+make install
+```
+
+## Running the Dashboard
+
+Run the Streamlit dashboard from the project root:
 
 ```bash
 make run
@@ -223,237 +127,50 @@ Equivalent command:
 uv run streamlit run app/main.py
 ```
 
-### Run lint checks
+## Development Commands
 
 ```bash
-make lint
+make format  # Format code
+make lint    # Run lint checks
+make type    # Run type checks
+make test    # Run tests
+make check   # Run lint, type checks, and tests
 ```
-
-Equivalent command:
-
-```bash
-uv run ruff check .
-```
-
-### Format code
-
-```bash
-make format
-```
-
-Equivalent command:
-
-```bash
-uv run ruff format .
-```
-
-### Run type checks
-
-```bash
-make type
-```
-
-Equivalent command:
-
-```bash
-uv run mypy src
-```
-
-### Run tests
-
-```bash
-make test
-```
-
-Equivalent command:
-
-```bash
-uv run pytest
-```
-
-### Run all checks
-
-```bash
-make check
-```
-
-This should run lint, type checks, and tests.
-
-## Recommended Makefile
-
-```makefile
-.PHONY: install run lint format type test check
-
-install:
-	uv sync
-
-run:
-	uv run streamlit run app/main.py
-
-lint:
-	uv run ruff check .
-
-format:
-	uv run ruff format .
-
-type:
-	uv run mypy src
-
-test:
-	uv run pytest
-
-check: lint type test
-```
-
-Makefile commands must use tab indentation, not spaces.
 
 ## Git Workflow
 
-This project uses a simple GitHub Flow style workflow.
+- `main` is the stable branch.
+- MVP work can happen on `feat/mvp` or focused feature branches.
+- Use small, focused commits with clear messages.
+- Run `make check` before merging to `main`.
 
-### Branch Strategy
+## Current Limitations
 
-```text
-main = stable working version
-feature branches = isolated work for each meaningful task
-```
+- CSV data is manually maintained.
+- No job-posting scraping yet.
+- No AI analysis yet.
+- No database yet.
+- No authentication.
+- No cloud deployment yet.
 
-Examples:
+## Roadmap
 
-```text
-chore/project-setup
-feat/csv-schema
-feat/data-loader
-feat/skill-analysis
-feat/priority-scoring
-feat/dashboard-mvp
-docs/update-readme
-fix/csv-path
-```
+1. Improve the dashboard UI and add better charts.
+2. Add duplicate detection and a manual job-entry form.
+3. Move data storage to SQLite or PostgreSQL.
+4. Add automation for job posting collection.
+5. Add AI-based job-description analysis.
+6. Add Docker and GitHub Actions.
+7. Deploy to AWS.
+8. Add monitoring and logging.
 
-### Commit Message Style
+## Coding Agent Guidelines
 
-Use Conventional Commit style:
-
-```text
-chore: set up Python project structure
-feat: add CSV data loader
-feat: add skill frequency analysis
-feat: add priority scoring rules
-test: add data loader tests
-docs: update README
-fix: handle missing CSV file
-```
-
-## Development Guidelines
-
-Keep the MVP simple.
-
-Before adding a new tool, framework, or service, check whether it directly supports the current MVP goal.
-
-### Preferred Approach
-
-* Start with CSV before database.
-* Start with rule-based scoring before AI scoring.
-* Start with Streamlit before FastAPI or React.
-* Start local before Docker or AWS deployment.
-* Keep business logic inside `src/job_market/`.
-* Keep Streamlit UI code inside `app/main.py`.
-* Add tests for reusable functions.
-* Run `make check` before merging to `main`.
-
-### Avoid in Early MVP
-
-* Do not add scraping yet.
-* Do not add authentication yet.
-* Do not add cloud deployment yet.
-* Do not add a backend API yet.
-* Do not hardcode absolute local paths.
-* Do not put analysis logic directly inside the Streamlit UI file.
-
-## Planned Roadmap
-
-### Phase 1: Local MVP
-
-* Define CSV schema.
-* Add sample job posting CSV.
-* Implement CSV data loader.
-* Validate required columns.
-* Add skill parsing.
-* Add basic skill frequency analysis.
-* Add rule-based priority scoring.
-* Display results in Streamlit.
-
-### Phase 2: Improved Dashboard
-
-* Add sidebar filters.
-* Add job status filters.
-* Add skill frequency chart.
-* Add priority ranking table.
-* Add summary metrics.
-* Improve README with screenshots.
-
-### Phase 3: Data Management
-
-* Add manual job entry form.
-* Add duplicate detection.
-* Move from CSV to SQLite or PostgreSQL.
-* Track job status changes over time.
-
-### Phase 4: Automation
-
-* Add semi-automated job posting collection.
-* Parse job alert emails or saved job feeds.
-* Detect new postings.
-* Avoid duplicate postings.
-* Add scheduled update workflow.
-
-### Phase 5: AI Analysis
-
-* Summarize job descriptions.
-* Extract required skills from job descriptions.
-* Compare job requirements against personal skill targets.
-* Generate job fit explanations.
-* Suggest resume keywords.
-
-### Phase 6: Cloud / DevOps Portfolio Extension
-
-* Add Dockerfile.
-* Add GitHub Actions CI.
-* Deploy dashboard to AWS.
-* Store data in managed database or object storage.
-* Add logging and monitoring.
-* Optionally manage infrastructure using Terraform.
-
-## Codex / Coding Agent Instructions
-
-When working on this project, follow these rules:
-
-1. Keep changes small and focused.
-2. Do not introduce unnecessary frameworks.
-3. Do not skip the MVP sequence.
-4. Do not put business logic inside `app/main.py`.
-5. Prefer simple functions over complex classes in the early phase.
-6. Add or update tests when adding reusable logic.
-7. Preserve the `src/job_market/` package structure.
-8. Use `uv` commands instead of raw `pip` commands.
-9. Use `make check` before considering a task complete.
-10. Explain any structural change in the commit message or pull request description.
-
-## Current Status
-
-The project is currently in the setup and MVP planning phase.
-
-The next expected task is to define the initial CSV schema and add a small sample CSV file under:
-
-```text
-data/raw/job_postings.csv
-```
-
-After the sample CSV exists, the next implementation target should be:
-
-```text
-src/job_market/data_loader.py
-```
-
-The first useful function should load the CSV file, validate required columns, and return a pandas DataFrame.
+- Keep changes small and focused.
+- Do not add unnecessary frameworks.
+- Keep business logic out of `app/main.py`.
+- Keep reusable logic in `src/job_market/`.
+- Add tests when adding reusable logic.
+- Use `uv` and `Makefile` commands for local development.
+- Do not introduce scraping, AI, database, Docker, or cloud features unless
+  explicitly requested.
