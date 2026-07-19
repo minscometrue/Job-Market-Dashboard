@@ -4,7 +4,6 @@ from job_market.scoring import (
     add_priority_scores,
     calculate_priority_score,
     get_priority_level,
-    get_priority_reasons,
 )
 
 
@@ -22,8 +21,6 @@ def test_high_priority_kansas_city_cloud_python_aws_job() -> None:
 
     assert calculate_priority_score(job) == 22
     assert get_priority_level(calculate_priority_score(job)) == "High"
-    assert "location (Kansas City) (+3)" in get_priority_reasons(job)
-    assert "required_skills (Python) (+3)" in get_priority_reasons(job)
 
 
 def test_low_priority_unrelated_job() -> None:
@@ -40,7 +37,6 @@ def test_low_priority_unrelated_job() -> None:
 
     assert calculate_priority_score(job) == 0
     assert get_priority_level(calculate_priority_score(job)) == "Low"
-    assert get_priority_reasons(job) == []
 
 
 def test_scoring_matches_case_insensitively() -> None:
@@ -71,7 +67,6 @@ def test_missing_values_do_not_crash_scoring() -> None:
     )
 
     assert calculate_priority_score(job) == 0
-    assert get_priority_reasons(job) == []
 
 
 def test_add_priority_scores_adds_columns_without_mutating_input() -> None:
@@ -91,8 +86,7 @@ def test_add_priority_scores_adds_columns_without_mutating_input() -> None:
 
     scored_jobs = add_priority_scores(jobs)
 
-    assert {"priority_score", "priority_level", "priority_reasons"}.issubset(
-        scored_jobs.columns,
-    )
+    assert {"priority_score", "priority_level"}.issubset(scored_jobs.columns)
+    assert "priority_reasons" not in scored_jobs.columns
     assert jobs.columns.tolist() == original_columns
     assert "priority_score" not in jobs.columns
