@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from job_market.analyzer import calculate_skill_frequency, parse_skills
 from job_market.data_loader import (
     CSVSchemaError,
     REQUIRED_COLUMNS,
@@ -67,3 +68,34 @@ def test_validate_required_columns_accepts_all_required_columns() -> None:
     jobs = pd.DataFrame(columns=REQUIRED_COLUMNS)
 
     validate_required_columns(jobs)
+
+
+def test_parse_skills_strips_whitespace_and_ignores_empty_values() -> None:
+    assert parse_skills(" Python ; SQL;; Docker ") == ["Python", "SQL", "Docker"]
+    assert parse_skills(None) == []
+
+
+def test_calculate_skill_frequency_counts_required_skills_per_job() -> None:
+    jobs = pd.DataFrame(
+        {
+            "required_skills": ["Python; SQL; Python", "Python;Docker", None],
+            "preferred_skills": ["AWS", "SQL;AWS", "Python"],
+        },
+    )
+
+    frequencies = calculate_skill_frequency(jobs)
+
+    assert frequencies.to_dict() == {"Python": 2, "Docker": 1, "SQL": 1}
+
+
+def test_calculate_skill_frequency_can_include_preferred_skills() -> None:
+    jobs = pd.DataFrame(
+        {
+            "required_skills": ["Python;SQL", "Python"],
+            "preferred_skills": ["AWS", "SQL;AWS"],
+        },
+    )
+
+    frequencies = calculate_skill_frequency(jobs, include_preferred=True)
+
+    assert frequencies.to_dict() == {"AWS": 2, "Python": 2, "SQL": 2}
