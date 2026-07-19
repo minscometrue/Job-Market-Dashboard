@@ -1,0 +1,7 @@
+company,title,location,work_mode,job_type,domain,required_skills,preferred_skills,date_posted,apply_url,status,notes
+Acme Cloud,Junior Backend Engineer,Seattle WA,Hybrid,Entry-Level,Cloud,Python;SQL;Docker,AWS;Terraform,2026-07-01,https://example.com/acme-backend,Interested,Good Python backend fit
+Northstar Health,Software Engineer Intern,Boston MA,Onsite,Internship,Healthcare,Python;REST;Git,Docker;PostgreSQL,2026-07-03,https://example.com/northstar-intern,New,Healthcare domain exposure
+FinEdge Labs,Data Engineer New Grad,New York NY,Hybrid,New Grad,FinTech,Python;SQL;Airflow,AWS;Spark,2026-07-05,https://example.com/finedge-data,Saved,Strong data pipeline role
+InfraWorks,SRE Intern,Remote,Remote,Internship,Infrastructure,Linux;Docker;Kubernetes,Python;Prometheus,2026-07-06,https://example.com/infraworks-sre,Applied,Good DevOps learning opportunity
+ModelOps AI,MLOps Engineer Junior,San Francisco CA,Hybrid,Junior,AI,Python;Docker;Kubernetes,AWS;MLflow,2026-07-08,https://example.com/modelops-mlops,Interested,Relevant to AI infrastructure
+Civic Data Co,Backend Engineer,Remote,Remote,Entry-Level,Data,Python;Django;PostgreSQL,Redis;Docker,2026-07-10,https://example.com/civic-backend,New,Remote backend option
