@@ -279,6 +279,30 @@ make check
 
 This should run lint, type checks, and tests.
 
+## Docker Compose
+
+Start the dashboard with Docker Compose:
+
+```bash
+make compose-up
+make compose-ps
+make compose-logs
+make compose-down
+```
+
+The dashboard is available at [http://localhost:8501](http://localhost:8501).
+Compose mounts the local `data/` directory into the container, so CSV updates
+are available without rebuilding the image.
+
+Equivalent commands:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs -f
+docker compose down
+```
+
 ## Recommended Makefile
 
 ```makefile
