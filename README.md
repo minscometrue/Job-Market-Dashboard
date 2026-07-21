@@ -19,6 +19,7 @@ introduced.
 - Parse and analyze required and preferred skills.
 - Apply explainable, rule-based priority scoring.
 - Display the results in a Streamlit dashboard.
+- Run the dashboard in a Docker container.
 - Filter jobs by status, job type, work mode, priority level, and skill search.
 - Show summary metrics, a job table, and a top-required-skills chart.
 
@@ -30,6 +31,7 @@ introduced.
 | Package manager | uv |
 | Data analysis | pandas |
 | Dashboard | Streamlit |
+| Container | Docker |
 | Testing | pytest |
 | Linting and formatting | ruff |
 | Type checking | mypy |
@@ -56,6 +58,8 @@ job-market-dashboard/
 │   ├── test_data_loader.py
 │   └── test_scoring.py
 ├── Makefile
+├── Dockerfile
+├── .dockerignore
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
@@ -127,6 +131,31 @@ Equivalent command:
 uv run streamlit run app/main.py
 ```
 
+## Running with Docker
+
+Build the Docker image:
+
+```bash
+make docker-build
+```
+
+Run the container:
+
+```bash
+make docker-run
+```
+
+Then open [http://localhost:8501](http://localhost:8501). The image includes
+the CSV data in `data/raw/` at build time. Rebuild the image after changing the
+CSV file.
+
+Equivalent Docker commands:
+
+```bash
+docker build -t job-market-dashboard .
+docker run --rm -p 8501:8501 job-market-dashboard
+```
+
 ## Development Commands
 
 ```bash
@@ -160,7 +189,7 @@ make check   # Run lint, type checks, and tests
 3. Move data storage to SQLite or PostgreSQL.
 4. Add automation for job posting collection.
 5. Add AI-based job-description analysis.
-6. Add Docker and GitHub Actions.
+6. Add GitHub Actions.
 7. Deploy to AWS.
 8. Add monitoring and logging.
 
