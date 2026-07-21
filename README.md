@@ -4,102 +4,56 @@
 
 Job Market Dashboard is a personal job market intelligence dashboard for
 tracking, analyzing, and prioritizing internship and entry-level job postings.
-It helps organize opportunities for Python, Software Engineering, Cloud,
-DevOps, Infrastructure, Data, AI/ML, and MLOps roles.
+It supports roles across Python, Software Engineering, Cloud, DevOps,
+Infrastructure, Data, AI/ML, and MLOps.
 
-The current MVP uses a manually maintained CSV file, pandas-based analysis, and
-a small Streamlit dashboard. It is intentionally local and simple so that the
-core job-search workflow is useful before automation or deployment features are
-introduced.
+The MVP uses a manually maintained CSV file, pandas-based analysis, and a
+minimal Streamlit dashboard.
 
 ## Current MVP Features
 
-- Load job postings from a CSV file.
-- Validate that required CSV columns are present.
-- Parse and analyze required and preferred skills.
-- Apply explainable, rule-based priority scoring.
-- Display the results in a Streamlit dashboard.
-- Run the dashboard in a Docker container.
-- Filter jobs by status, job type, work mode, priority level, and skill search.
-- Show summary metrics, a job table, and a top-required-skills chart.
+- Load and validate job-posting CSV data.
+- Analyze required and preferred skills.
+- Apply rule-based priority scores and levels.
+- Display summary metrics, a job table, and top-skill chart in Streamlit.
+- Filter by status, job type, work mode, priority level, and skill text.
+- Run locally, with Docker, or with Docker Compose.
 
 ## Tech Stack
 
-| Area | Technology |
-| --- | --- |
-| Language | Python |
-| Package manager | uv |
-| Data analysis | pandas |
-| Dashboard | Streamlit |
-| Container | Docker |
-| Testing | pytest |
-| Linting and formatting | ruff |
-| Type checking | mypy |
-| Command runner | Makefile |
-| MVP data storage | CSV |
+Python, uv, pandas, Streamlit, pytest, ruff, mypy, Makefile, Docker, Docker
+Compose, and CSV-based data storage.
 
 ## Project Structure
 
 ```text
 job-market-dashboard/
-├── app/
-│   └── main.py
-├── data/
-│   └── raw/
-│       ├── job_postings.csv      # Standard local data file
-│       └── sample_jobs.csv       # Included sample/fallback data
-├── src/
-│   └── job_market/
-│       ├── __init__.py
-│       ├── analyzer.py
-│       ├── data_loader.py
-│       └── scoring.py
-├── tests/
-│   ├── test_data_loader.py
-│   └── test_scoring.py
-├── Makefile
+├── app/main.py                  # Streamlit UI entry point
+├── data/raw/                    # Manually maintained CSV data
+├── src/job_market/
+│   ├── data_loader.py            # CSV loading and validation
+│   ├── analyzer.py               # Skill parsing and frequency analysis
+│   └── scoring.py                # Rule-based priority scoring
+├── tests/                        # Automated tests
 ├── Dockerfile
-├── .dockerignore
+├── compose.yaml
+├── Makefile
 ├── pyproject.toml
-├── README.md
 └── uv.lock
 ```
 
-- `app/main.py`: Streamlit UI composition, filters, metrics, and tables. Keep
-  reusable business logic out of this file.
-- `src/job_market/data_loader.py`: CSV loading and required-column validation.
-- `src/job_market/analyzer.py`: Skill parsing and skill-frequency analysis.
-- `src/job_market/scoring.py`: Rule-based job priority scores and levels.
-- `data/raw/job_postings.csv`: Standard location for a manually maintained job
-  posting CSV. The dashboard uses `sample_jobs.csv` as a fallback while the
-  standard file is absent.
-- `tests/`: Automated tests for reusable data-loading, analysis, and scoring
-  behavior.
+Keep UI orchestration in `app/main.py` and reusable business logic in
+`src/job_market/`.
 
 ## CSV Schema
 
-Create `data/raw/job_postings.csv` with these columns:
+Create `data/raw/job_postings.csv` with the following columns:
 
 ```csv
 company,title,location,work_mode,job_type,domain,required_skills,preferred_skills,date_posted,apply_url,status,notes
 ```
 
-| Column | Description |
-| --- | --- |
-| `company` | Company name |
-| `title` | Job title |
-| `location` | Job location |
-| `work_mode` | Onsite, Hybrid, Remote, or Unknown |
-| `job_type` | Internship, Entry-Level, New Grad, Junior, or Unknown |
-| `domain` | Job or industry domain |
-| `required_skills` | Required skills |
-| `preferred_skills` | Preferred skills |
-| `date_posted` | Posting date, if available |
-| `apply_url` | Application URL |
-| `status` | Tracking status, such as New, Interested, or Applied |
-| `notes` | Personal notes |
-
-Separate skills with semicolons:
+Skills must be semicolon-separated:
 
 ```text
 Python;SQL;AWS;Docker
@@ -107,19 +61,13 @@ Python;SQL;AWS;Docker
 
 ## Setup
 
-Install the project dependencies with either command:
-
 ```bash
 uv sync
-```
-
-```bash
+# or
 make install
 ```
 
-## Running the Dashboard
-
-Run the Streamlit dashboard from the project root:
+## Run Locally
 
 ```bash
 make run
@@ -131,60 +79,23 @@ Equivalent command:
 uv run streamlit run app/main.py
 ```
 
-## Running with Docker
-
-Build the Docker image:
+## Run with Docker
 
 ```bash
 make docker-build
-```
-
-Run the container:
-
-```bash
 make docker-run
 ```
 
-Then open [http://localhost:8501](http://localhost:8501). The image includes
-the CSV data in `data/raw/` at build time. Rebuild the image after changing the
-CSV file.
-
-Equivalent Docker commands:
+Equivalent commands:
 
 ```bash
 docker build -t job-market-dashboard .
 docker run --rm -p 8501:8501 job-market-dashboard
 ```
 
-## Development Commands
+Open [http://localhost:8501](http://localhost:8501).
 
-```bash
-uv run mypy src
-```
-
-### Run tests
-
-```bash
-make test
-```
-
-Equivalent command:
-
-```bash
-uv run pytest
-```
-
-### Run all checks
-
-```bash
-make check
-```
-
-This should run lint, type checks, and tests.
-
-## Docker Compose
-
-Start the dashboard with Docker Compose:
+## Run with Docker Compose
 
 ```bash
 make compose-up
@@ -192,10 +103,6 @@ make compose-ps
 make compose-logs
 make compose-down
 ```
-
-The dashboard is available at [http://localhost:8501](http://localhost:8501).
-Compose mounts the local `data/` directory into the container, so CSV updates
-are available without rebuilding the image.
 
 Equivalent commands:
 
@@ -206,68 +113,46 @@ docker compose logs -f
 docker compose down
 ```
 
-## Recommended Makefile
+Compose mounts the local `data/` directory at `/app/data`, so CSV changes are
+available without rebuilding the image. The dashboard is available at
+[http://localhost:8501](http://localhost:8501).
 
-```makefile
-.PHONY: install run lint format type test check
+## Development Commands
 
-install:
-	uv sync
-
-run:
-	uv run streamlit run app/main.py
-
-lint:
-	uv run ruff check .
-
-format:
-	uv run ruff format .
-
-type:
-	uv run mypy src
-
-test:
-	uv run pytest
-
-check: lint type test
+```bash
+make format
+make lint
+make type
+make test
+make check
 ```
-
-Makefile commands must use tab indentation, not spaces.
 
 ## Git Workflow
 
 - `main` is the stable branch.
-- MVP work can happen on `feat/mvp` or focused feature branches.
-- Use small, focused commits with clear messages.
-- Run `make check` before merging to `main`.
+- Use `feat/mvp` or focused feature branches for MVP work.
+- Keep commits small and run `make check` before merging.
 
 ## Current Limitations
 
 - CSV data is manually maintained.
-- No job-posting scraping yet.
-- No AI analysis yet.
-- No database yet.
-- No authentication.
-- No cloud deployment yet.
+- No scraping, AI analysis, database, authentication, or cloud deployment.
 
 ## Roadmap
 
-1. Improve the dashboard UI and add better charts.
-2. Add duplicate detection and a manual job-entry form.
-3. Move data storage to SQLite or PostgreSQL.
-4. Add automation for job posting collection.
-5. Add AI-based job-description analysis.
-6. Add GitHub Actions.
-7. Deploy to AWS.
-8. Add monitoring and logging.
+1. Improve dashboard UI and charts.
+2. Add duplicate detection and manual job entry.
+3. Move to SQLite or PostgreSQL.
+4. Add job-posting collection automation.
+5. Add AI-assisted job-description analysis.
+6. Add GitHub Actions, AWS deployment, monitoring, and logging.
 
 ## Coding Agent Guidelines
 
 - Keep changes small and focused.
 - Do not add unnecessary frameworks.
 - Keep business logic out of `app/main.py`.
-- Keep reusable logic in `src/job_market/`.
-- Add tests when adding reusable logic.
-- Use `uv` and `Makefile` commands for local development.
-- Do not introduce scraping, AI, database, Docker, or cloud features unless
-  explicitly requested.
+- Add tests for reusable logic in `src/job_market/`.
+- Use `uv` and Makefile commands.
+- Do not add scraping, AI, databases, cloud features, or other infrastructure
+  beyond the explicitly requested scope.

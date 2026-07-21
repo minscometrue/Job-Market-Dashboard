@@ -1,10 +1,16 @@
-.PHONY: install run lint format type test check compose-build compose-up compose-down compose-logs compose-ps
+.PHONY: install run lint format type test check docker-build docker-run compose-build compose-up compose-down compose-logs compose-ps
 
 install:
 	uv sync
 
 run:
 	uv run streamlit run app/main.py
+
+docker-build:
+	docker build -t job-market-dashboard .
+
+docker-run:
+	docker run --rm -p 8501:8501 job-market-dashboard
 
 compose-build:
 	docker compose build
