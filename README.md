@@ -159,12 +159,80 @@ docker run --rm -p 8501:8501 job-market-dashboard
 ## Development Commands
 
 ```bash
-make format  # Format code
-make lint    # Run lint checks
-make type    # Run type checks
-make test    # Run tests
-make check   # Run lint, type checks, and tests
+uv run mypy src
 ```
+
+### Run tests
+
+```bash
+make test
+```
+
+Equivalent command:
+
+```bash
+uv run pytest
+```
+
+### Run all checks
+
+```bash
+make check
+```
+
+This should run lint, type checks, and tests.
+
+## Docker Compose
+
+Start the dashboard with Docker Compose:
+
+```bash
+make compose-up
+make compose-ps
+make compose-logs
+make compose-down
+```
+
+The dashboard is available at [http://localhost:8501](http://localhost:8501).
+Compose mounts the local `data/` directory into the container, so CSV updates
+are available without rebuilding the image.
+
+Equivalent commands:
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs -f
+docker compose down
+```
+
+## Recommended Makefile
+
+```makefile
+.PHONY: install run lint format type test check
+
+install:
+	uv sync
+
+run:
+	uv run streamlit run app/main.py
+
+lint:
+	uv run ruff check .
+
+format:
+	uv run ruff format .
+
+type:
+	uv run mypy src
+
+test:
+	uv run pytest
+
+check: lint type test
+```
+
+Makefile commands must use tab indentation, not spaces.
 
 ## Git Workflow
 
